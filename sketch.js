@@ -1,63 +1,68 @@
-var block1,block2,block3,block4,ball,edge
-var canvas;
-var music;
+var starImg, fairyImg, bgImg;
+var fairy , fairyVoice;
+var star, starBody;
 
-function preload(){
-    music = loadSound("music.mp3");
-}
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
 
-
-function setup(){
-    canvas = createCanvas(800,600);
-
-    //create 4 different surfaces
-    block1 = createSprite(0,580,360,30);
-     block1.shapeColor = rgb(0,0,255);
-    block2 = createSprite(295,580,200,30);
-     block2.shapeColor = rgb(255,128,0);
-    block3 = createSprite(515,580,200,30);
-     block3.shapeColor = rgb(153,0,75);
-     block4 = createSprite(740,580,220,30);
-     block4.shapeColor = rgb(0,100,0);
-
-     ball=createSprite(random(20,750),100,40,40)
-     ball.shapeColor=rgb(255,255,255)
-     ball.velocityX=5
-     ball.velocityY=4
-
-
-
-
-    //create box sprite and give velocity
+function preload()
+{
+	starImg = loadImage("images/star.png");
+	fairyImg = loadAnimation("images/fairyImage1.png","images/fairyImage2.png");
+	bgImg = loadImage("images/starNight.png");
+	fairyVoice = loadSound("sound/JoyMusic.mp3");
 
 }
+
+function setup() {
+	createCanvas(800, 750);
+
+	 fairyVoice.play();
+
+	fairy = createSprite(130, 520);
+	fairy.addAnimation("fairyflying",fairyImg);  
+	fairy.scale =0.25;
+
+	star = createSprite(650,30);
+	star.addImage(starImg);
+	star.scale = 0.2;
+
+	engine = Engine.create();
+	world = engine.world;
+
+	starBody = Bodies.circle(650 , 30 , 5 , {restitution:0.5, isStatic:true});
+	World.add(world, starBody);
+	
+	Engine.run(engine);
+
+}
+
 
 function draw() {
-    background(rgb(169,169,169));
-    edge=createEdgeSprites()
-    ball.bounceOff(edge)
-    if(block1.isTouching(ball)){
-        ball.velocityX=0
-        ball.velocityY=0
-        music.stop()
-        
-    }
-    if(block2.isTouching(ball)&&ball.bounceOff(block2)){
-        ball.shapeColor = rgb(255,128,0); 
-        music.play()
-    }
+  background(bgImg);
 
-    if(block3.isTouching(ball)&&ball.bounceOff(block3)){
-        ball.shapeColor = rgb(153,0,75); 
-    }
+  star.x=starBody.position.x;
+  star.y=starBody.position.y;
+if(star.y>500 ){
+	Matter.Body.setStatic(starBody,true)
+}
+  drawSprites();
 
-    if(block4.isTouching(ball)&&ball.bounceOff(block4)){
-        ball.shapeColor = rgb(0,100,0); 
-    }
-    //create edgeSprite
+}
 
+function keyPressed() {
+	if(keyCode===LEFT_ARROW){
+		fairy.x=fairy.x-20
+	}
 
+if(keyCode===RIGHT_ARROW){
+		fairy.x=fairy.x+20
+	}
 
-    //add condition to check if box touching surface and make it box
-    drawSprites()
+	if(keyCode===DOWN_ARROW){
+		Matter.Body.setStatic(starBody,false)	
+	}
+	//write code here
 }
